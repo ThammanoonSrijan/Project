@@ -1,24 +1,39 @@
-//แถบการนำทางด้านล่างที่กำหนดเองสำหรับแอปพลิเคชัน
-
 import 'package:flutter/material.dart';
 
-class CustomBottomNavigationBar extends StatelessWidget {
+class CustomBottomNavigationBar extends StatefulWidget {
   const CustomBottomNavigationBar({super.key});
+
+  @override
+  State<CustomBottomNavigationBar> createState() =>
+      _CustomBottomNavigationBarState();
+}
+
+class _CustomBottomNavigationBarState
+    extends State<CustomBottomNavigationBar> {
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: const Color(0xFF313440),
-      selectedItemColor: Colors.white,
-      unselectedItemColor: Colors.white70,
-      currentIndex: 0,
-      onTap: (i) {},
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: "Build"),
-        BottomNavigationBarItem(icon: Icon(Icons.save), label: "Save"),
-        BottomNavigationBarItem(icon: Icon(Icons.folder_open), label: "Load"),
-        BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
+      currentIndex: currentIndex,
+      onTap: (i) {
+        setState(() {
+          currentIndex = i;
+        });
+      },
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.dashboard),
+          label: "Build",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.storage),
+          label: "Storage",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: "Settings",
+        ),
       ],
     );
   }

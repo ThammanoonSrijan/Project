@@ -1,46 +1,42 @@
 import 'package:flutter/material.dart';
+import '../../models/character_stats.dart';
 
 class SpecialStatsSection extends StatelessWidget {
-  const SpecialStatsSection({super.key});
+  final CharacterStats stats;
+
+  SpecialStatsSection({
+    super.key,
+    required this.stats,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return _sectionCard(
-      title: "Special Stats",
-      icon: Icons.bolt,
-      child: Column(children: []),
-    );
-  }
-
-  Widget _sectionCard({
-    required String title,
-    required IconData icon,
-    required Widget child,
-  }) {
     return Card(
-      color: const Color(0xFF1E2A44),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white.withOpacity(0.05),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              "Special Stats",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 12),
+
             Row(
               children: [
-                Icon(icon, color: Colors.cyanAccent),
-                const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                Expanded(child: Text("Special Type")),
+                Text(stats.specialType),
               ],
             ),
-            const SizedBox(height: 16),
-            child,
+
+            if (stats.specialType != "None")
+              Row(
+                children: [
+                  Expanded(child: Text("Value")),
+                  Text("${stats.specialValue}"),
+                ],
+              ),
           ],
         ),
       ),

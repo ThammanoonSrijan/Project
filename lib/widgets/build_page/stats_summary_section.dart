@@ -1,51 +1,50 @@
 import 'package:flutter/material.dart';
+import '../../models/character_stats.dart';
 
 class StatsSummarySection extends StatelessWidget {
-  const StatsSummarySection({super.key});
+  final CharacterStats stats;
+
+  StatsSummarySection({
+    super.key,
+    required this.stats,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return _sectionCard(
-      title: "Stats Summary",
-      icon: Icons.bar_chart,
-      child: Column(children: [
-        ],
+    return Card(
+      color: Colors.white.withOpacity(0.05),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(
+              "Final Summary",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 12),
+
+            summaryRow("Total STR", stats.str),
+            summaryRow("Total INT", stats.intStat),
+            summaryRow("Total VIT", stats.vit),
+            summaryRow("Total AGI", stats.agi),
+            summaryRow("Total DEX", stats.dex),
+
+            if (stats.specialType != "None") ...[
+              Divider(),
+              summaryRow(stats.specialType, stats.specialValue),
+            ]
+          ],
+        ),
       ),
     );
   }
 
-  Widget _sectionCard({
-    required String title,
-    required IconData icon,
-    required Widget child,
-  }) {
-    return Card(
-      color: const Color(0xFF1E2A44),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: Colors.cyanAccent),
-                const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            child,
-          ],
-        ),
-      ),
+  Widget summaryRow(String label, int value) {
+    return Row(
+      children: [
+        Expanded(child: Text(label)),
+        Text("$value"),
+      ],
     );
   }
 }

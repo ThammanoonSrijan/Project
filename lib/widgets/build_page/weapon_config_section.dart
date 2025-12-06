@@ -1,46 +1,86 @@
 import 'package:flutter/material.dart';
+import '../../models/character_stats.dart';
 
-class WeaponConfigSection extends StatelessWidget {
-  const WeaponConfigSection({super.key});
+class WeaponConfigSection extends StatefulWidget {
+  final CharacterStats stats;
+
+  WeaponConfigSection({
+    super.key,
+    required this.stats,
+  });
+
+  @override
+  State<WeaponConfigSection> createState() => _WeaponConfigSectionState();
+}
+
+class _WeaponConfigSectionState extends State<WeaponConfigSection> {
+  String? selectedWeapon;
+  int refine = 0;
+  int watk = 0;
+
+  final List<String> sampleWeapons = [
+    "Long Sword",
+    "Magic Staff",
+    "Bow",
+    "Knuckles",
+    "Halberd",
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return _sectionCard(
-      title: "Main Weapon",
-      icon: Icons.gps_fixed,
-      child: Column(),
-    );
-  }
-
-  Widget _sectionCard({
-    required String title,
-    required IconData icon,
-    required Widget child,
-  }) {
     return Card(
-      color: const Color(0xFF1E2A44),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white.withOpacity(0.05),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              "Main Weapon",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 12),
+
+            DropdownButton<String>(
+              value: selectedWeapon,
+              hint: Text("Select Weapon"),
+              items: sampleWeapons
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .toList(),
+              onChanged: (v) => setState(() => selectedWeapon = v),
+            ),
+
+            SizedBox(height: 12),
+
             Row(
               children: [
-                Icon(icon, color: Colors.cyanAccent),
-                const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                Text("Enhance: "),
+                DropdownButton<int>(
+                  value: refine,
+                  items: List.generate(
+                    16,
+                        (i) => DropdownMenuItem(value: i, child: Text("+$i")),
                   ),
+                  onChanged: (v) => setState(() => refine = v ?? 0),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            child,
+
+            SizedBox(height: 12),
+
+            Row(
+              children: [
+                Text("WATK: "),
+                SizedBox(
+                  width: 80,
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    controller: TextEditingController(text: watk.toString()),
+                    onSubmitted: (v) =>
+                        setState(() => watk = int.tryParse(v) ?? watk),
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),

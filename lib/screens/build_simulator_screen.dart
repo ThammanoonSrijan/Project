@@ -1,219 +1,151 @@
-// หน้า Build Simulator ที่ปรับแต่งได้ตามขนาดหน้าจอ หน้าหลักของแอปพลิเคชัน
+// build_simulator_screen.dart
 
 import 'package:flutter/material.dart';
 
+import '../models/character_stats.dart';
 import '../widgets/build_page/character_stats_section.dart';
 import '../widgets/build_page/weapon_config_section.dart';
 import '../widgets/build_page/stats_summary_section.dart';
 import '../widgets/build_page/special_stats_section.dart';
-import '../widgets/navigation/navigation_rail.dart';
-import '../widgets/navigation/bottom_navigation_bar.dart';
-import '../widgets/navigation/app_drawer.dart';
 
-class BuildSimulatorScreen extends StatelessWidget {
+class BuildSimulatorScreen extends StatefulWidget {
   const BuildSimulatorScreen({super.key});
 
-  // กำหนด breakpoint ชัดเจน
-  static const double _mobileMaxWidth = 700;
-  static const double _tabletMinWidth = 700;
+  @override
+  State<BuildSimulatorScreen> createState() => _BuildSimulatorScreenState();
+}
+
+class _BuildSimulatorScreenState extends State<BuildSimulatorScreen> {
+  final CharacterStats stats = CharacterStats();
+
+  static const double mobileMaxWidth = 700;
+  static const double tabletMinWidth = 700;
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double width = constraints.maxWidth;
-        final bool isMobile = width < _mobileMaxWidth;
-        final bool isDesktop = width >= _tabletMinWidth;
+    return LayoutBuilder(builder: (context, c) {
+      final width = c.maxWidth;
+      final isMobile = width < mobileMaxWidth;
+      final isDesktop = width >= tabletMinWidth;
 
-        final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-        final navRailKey = GlobalKey<CustomNavigationRailState>();
-
-        return Scaffold(
-          key: scaffoldKey,
-          appBar: AppBar(
-            backgroundColor: const Color(0xFF119D7C),
-            title: Row(
-              children: [
-                const Icon(
-                  Icons.auto_awesome,
-                  color: Colors.cyanAccent,
-                  size: 32,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    isMobile ? "Toram Build" : "Toram Item Build Simulation",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            // แสดง hamburger: ซ้ายสำหรับเดสก์ท็อป, ขวาสำหรับมือถือ
-            leading: isDesktop
-                ? IconButton(
-                    icon: const Icon(Icons.menu),
-                    onPressed: () => navRailKey.currentState?.toggleExtended(),
-                  )
-                : null,
-            actions: isMobile
-                ? [
-                    IconButton(
-                      icon: const Icon(Icons.menu),
-                      onPressed: () =>
-                          scaffoldKey.currentState?.openEndDrawer(),
-                    ),
-                  ]
-                : null,
+      return Scaffold(
+        backgroundColor: const Color(0xFF1C1C2E),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF119D7C),
+          title: Text(
+            isMobile ? "Toram Build" : "Toram Item Build Simulation",
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-
-          // มือถือ: มี Drawer (3 ขีดขวา) | เดสก์ท็อป: ไม่มี
-          endDrawer: isMobile ? const AppDrawer() : null,
-
-          // ตัว body แยกตามขนาดหน้าจอ
-          body: Row(
-            children: [
-              // เดสก์ท็อป/แท็บเล็ต: แสดง NavigationRail ด้านซ้าย
-              if (isDesktop) ...[
-                CustomNavigationRail(key: navRailKey),
-                const VerticalDivider(
-                  thickness: 1,
-                  width: 1,
-                  color: Color.fromARGB(26, 240, 237, 237),
+        ),
+        body: Row(
+          children: [
+            if (isDesktop)
+              Container(
+                width: 70,
+                color: const Color(0xFF2E2F4F),
+                child: const Center(
+                  child: Icon(Icons.menu, color: Colors.white),
                 ),
-                Padding(padding: const EdgeInsets.only(left: 27)),
-              ],
-
-              // เนื้อหาหลัก
-              Expanded(
-                child: _buildMainContent(isMobile: isMobile, width: width),
               ),
-            ],
-          ),
 
-          // มือถือ: แสดง BottomNavigationBar | เดสก์ท็อป: ไม่มี
-          bottomNavigationBar: isMobile
-              ? const CustomBottomNavigationBar()
-              : null,
-        );
-      },
-    );
+            Expanded(child: _buildMainContent(isMobile)),
+          ],
+        ),
+      );
+    });
   }
 
-  Widget _buildMainContent({required bool isMobile, required double width}) {
+  Widget _buildMainContent(bool isMobile) {
     return SafeArea(
-      left:
-          false, // สำคัญ! อย่าให้ SafeArea ทับซ้าย → ปล่อยให้ Rail อยู่เต็มพื้นที่
       child: Padding(
-        // ใช้ padding เฉพาะด้านที่ไม่ทับ Rail (ซ้าย)
-        padding: EdgeInsets.only(
-          //left: isDesktop ? 0 : 24, // เดสก์ท็อป = 0 (ไม่ทับ Rail), มือถือ = 24
-          top: 24,
-          right: 24,
-          bottom: 24,
-          left: isMobile ? 24 : 0,
-        ),
+        padding: const EdgeInsets.all(24),
         child: Container(
-          width: double.infinity,
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: const Color(0xFF383B68).withOpacity(0.24),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Equipment Configuration",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 32),
-              Expanded(
-                child: isMobile
-                    ? SingleChildScrollView(child: _buildMobileLayout())
-                    : _buildDesktopLayout(),
-              ),
-            ],
-          ),
+          child: isMobile
+              ? SingleChildScrollView(child: _mobileLayout())
+              : _desktopLayout(),
         ),
       ),
     );
   }
 
-  // Layout สำหรับมือถือ (เรียงจากบนลงล่าง)
-  Widget _buildMobileLayout() {
+  // ---------- Mobile Vertical Layout ----------
+  Widget _mobileLayout() {
     return Column(
-      children: const [
-        CharacterStatsSection(),
-        SizedBox(height: 24),
-        WeaponConfigSection(),
-        SizedBox(height: 32),
-        StatsSummarySection(),
-        SizedBox(height: 24),
-        SpecialStatsSection(),
-        SizedBox(height: 32),
-        SizedBox(height: 100),
+      children: [
+        CharacterStatsSection(stats: stats),
+        const SizedBox(height: 24),
+
+        WeaponConfigSection(stats: stats),
+        const SizedBox(height: 24),
+
+        StatsSummarySection(stats: stats),
+        const SizedBox(height: 24),
+
+        SpecialStatsSection(stats: stats),
+        const SizedBox(height: 50),
       ],
     );
   }
 
-  // Layout สำหรับเดสก์ท็อป (3 คอลัมน์)
-  Widget _buildDesktopLayout() {
+  // ---------- Desktop 3-column Layout ----------
+  Widget _desktopLayout() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          flex: 4,
+          flex: 3,
           child: Column(
-            children: const [
-              CharacterStatsSection(),
-              SizedBox(height: 24),
-              WeaponConfigSection(),
+            children: [
+              CharacterStatsSection(stats: stats),
+              const SizedBox(height: 24),
+              WeaponConfigSection(stats: stats),
             ],
           ),
         ),
-        const SizedBox(width: 32),
+        const SizedBox(width: 24),
+
         Expanded(
           flex: 3,
           child: Column(
-            children: const [
-              StatsSummarySection(),
-              SizedBox(height: 24),
-              SpecialStatsSection(),
+            children: [
+              StatsSummarySection(stats: stats),
+              const SizedBox(height: 24),
+              SpecialStatsSection(stats: stats),
             ],
           ),
         ),
-        const SizedBox(width: 32),
+        const SizedBox(width: 24),
+
         Expanded(
-          flex: 6,
-          child: Column(children: [_EquipmentPlaceholder(), const Spacer()]),
+          flex: 3,
+          child: _equipmentPlaceholder(),
         ),
       ],
     );
   }
 
-  // Widget ตัวอย่างสำหรับ Equipment Slot (แชร์ทั้ง 2 layout)
-  static Widget _EquipmentPlaceholder() {
+  static Widget _equipmentPlaceholder() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.cyanAccent.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.cyanAccent.withOpacity(0.25)),
       ),
       child: const Column(
         children: [
-          Icon(Icons.build, size: 56, color: Colors.cyanAccent),
+          Icon(Icons.shield, size: 50, color: Colors.cyanAccent),
           SizedBox(height: 16),
           Text(
-            "Equipment Slot\n(Armor / AddGear / Ring / etc.)",
+            "Equipment Slots (Armor / AddGear / Ring …)",
+            style: TextStyle(color: Colors.white70),
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, color: Colors.white70),
           ),
         ],
       ),
